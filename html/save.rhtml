@@ -14,7 +14,7 @@
 <p>
 Save completed.
 </p>
-<dl>
+<dl id="form">
 <% @forms.each do |form| %>
   <dt><%=h form.label %>
   <dd><%=h @saved_data[ form.id ] %>
