@@ -17,9 +17,12 @@
 <dl>
 <% @forms.each do |form| %>
   <dt><%=h form.label %>
+<% if form.require? %>
+      <span class="require">*</span>
+<% end %>
   <dd><%= form.to_html %>
 <% if form.note %>
-  <dd class="note"><%=h form.note %>
+  <br><span class="note"><%=h form.note %></span>
 <% end %>
 <% end %>
 </dl>

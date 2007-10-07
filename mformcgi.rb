@@ -108,8 +108,10 @@ end
 class RequiredFormMissingError < Exception; end
 
 class ValidateError < Exception; end
+class FilenameSuffixError < ValidateError; end
 
 class FormCGI
+   DATA_FILE = "data.csv"
    def initialize
       @cgi = CGI.new
       @conf = Config.new( open("mformcgi.conf") )
@@ -119,7 +121,9 @@ class FormCGI
       rhtml = nil
       case action
       when "default"
-         rhtml = "index.rhtml"
+         rhtml = "index.rhtml"   
+      when "admin"
+         rhtml = "admin.rhtml"   
       when "save"
          begin
             save
@@ -129,6 +133,10 @@ class FormCGI
             #STDERR.puts e.message
             @error_message = e.message
          rescue ValidateError => e
+            rhtml = "index.rhtml"
+            #STDERR.puts e.message
+            @error_message = e.message
+         rescue FilenameSuffixError => e
             rhtml = "index.rhtml"
             #STDERR.puts e.message
             @error_message = e.message
@@ -154,6 +162,9 @@ class FormCGI
          when "FormFile"
             original_filename = str.original_filename
             extname = File.extname( original_filename )
+            if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ str
+               raise FilenameSuffixError, "validate error: #{form.label}:#{str}"
+            end
             content = str.read
             #STDERR.puts content.inspect
             #STDERR.puts form.filename.inspect
@@ -180,7 +191,7 @@ class FormCGI
       end
       #STDERR.puts @forms.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id] or "" }.inspect
-      open( File.join( @conf[:data_dir], "data.csv" ), "a" ) do |io|
+      open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
          io.puts( ( [ now ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<link rel="stylesheet" href="./css/default.css" type="text/css">
+<title><%=h @conf[:title] %></title>
+</head>
+<body>
+<h1><%=h @conf[:title] %></h1>
+<p>
+</p>
+<table>
+<tr><th class="time">Time</th>
+<% @forms.each do |form| %>
+  <th class="<%=h form.id %>"><%=h form.label %></th>
+<% end %>
+<%
+@saved_data = {}
+open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
+   io.each do |line|
+      time, *tmp = line.chomp.split( /\t/ )
+      dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( time ).to_a
+%>
+<tr><td class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></td>
+<% @forms.each_with_index do |form, i| %>
+<%    @saved_data[ form.id ] = tmp[i] %>
+  <td class="<%=h form.id %>">
+<% if form.class == FormFile
+      extname = File.extname( tmp[i] )
+      now = time
+      filename = nil
+      eval( 'filename = "' + form.filename + '"' )
+%>
+  <a href="<%=h File.join( @conf[:data_dir], filename ) %>"><%=h tmp[i] %></a>
+<% else %>
+  <%=h tmp[i] %>
+<% end %>
+  </td>
+<% end %>
+</tr>
+<%
+   end
+end
+%>
+</table>
+<hr>
+<address>
+<%=h @conf[:admin_name] %>
+<% if @conf[:admin_mail] %>
+  <a href="<%=h @conf[:admin_mail] %>"><%=h @conf[:admin_mail] %></a>
+<% end %>
+</address>
+</body>
+</html>

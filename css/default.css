@@ -11,12 +11,15 @@
   clear: both;
 }
 #form dd {
-  margin-left:	5em;
+  margin-left:	6em;
   border-left:	1px solid gray;
   text-align:	0px;
   padding-left:	10px;
 }
-#form dd.note {
+.require {
+  color: red;
+}
+.note {
   font-size: smaller;
 }
 p {
