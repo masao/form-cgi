@@ -1,0 +1,24 @@
+.error_message {
+  color: #f66;
+}
+#form {
+  margin: 4em;
+  line-height: 2.0;
+}
+#form dt {
+  display: block;
+  float: left;
+  clear: both;
+}
+#form dd {
+  margin-left:	5em;
+  border-left:	1px solid gray;
+  text-align:	0px;
+  padding-left:	10px;
+}
+#form dd.note {
+  font-size: smaller;
+}
+p {
+  text-indent: 1em;
+}

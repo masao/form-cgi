@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<link rel="stylesheet" href="./css/default.css" type="text/css">
+<title><%=h @conf[:title] %></title>
+</head>
+<body>
+<h1><%=h @conf[:title] %></h1>
+<% if @error_message %>
+<p class="error_message">Error: <%=h @error_message %></p>
+<% end %>
+<p>
+Save completed.
+</p>
+<dl>
+<% @forms.each do |form| %>
+  <dt><%=h form.label %>
+  <dd><%=h @saved_data[ form.id ] %>
+<% end %>
+</dl>
+<hr>
+<address>
+<%=h @conf[:admin_name] %>
+<% if @conf[:admin_mail] %>
+  <a href="<%=h @conf[:admin_mail] %>"><%=h @conf[:admin_mail] %></a>
+<% end %>
+</address>
+</body>
+</html>
