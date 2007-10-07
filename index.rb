@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # $Id$
 
-require "uploader.rb"
+require "mformcgi.rb"
 
 begin
    formapp = FormCGI.new

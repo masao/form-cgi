@@ -9,6 +9,20 @@ class CGI
    def valid?( param )
       params[param] and params[param][0] and params[param][0].size > 0
    end
+   def value( opt )
+      @data ||= {}
+      if @data[opt]
+         @data[opt]
+      else
+         data = params[opt][0]
+         #STDERR.puts data.inspect
+         if multipart? and data.respond_to?( :read )
+            @data[opt] = data.read
+         else
+            @data[opt] = data
+         end
+      end
+   end
 end
 
 class Config
@@ -56,12 +70,12 @@ class FormText < FormComponent
       size = if @opt["size"]
                 %Q| size="#{ @opt["size"] }"|
              end
-      %Q|<input type="text" name="#{ @id }" value=""#{ size }>|
+      %Q|<input type="text" name="#{ @id }" value="#{ escapeHTML @opt["default"].to_s }"#{ size }>|
    end
 end
 class FormFile < FormComponent
    def to_html
-      %Q|<input type="file" name="#{ @id }" value=""></input>|
+      %Q|<input type="file" name="#{ @id }"></input>|
    end
 end
 class FormSubmit < FormComponent
@@ -72,11 +86,16 @@ end
 
 class FormBuilder
    include Enumerable
-   def initialize( form_conf )
+   def initialize( cgi, form_conf )
       @forms = []
       form_conf.each_with_index do |f, idx|
          klass = FormComponent.form2class( f )
-         @forms << klass.new( "form#{idx}", f )
+         name = "form#{idx}"
+         default = nil
+         if cgi.valid?( name )
+            f["default"] = cgi.value( name )
+         end
+         @forms << klass.new( name, f )
       end
    end
    def each
@@ -88,11 +107,13 @@ end
 
 class RequiredFormMissingError < Exception; end
 
+class ValidateError < Exception; end
+
 class FormCGI
    def initialize
       @cgi = CGI.new
-      @conf = Config.new( open("uploader.conf") )
-      @forms =  FormBuilder.new( @conf["forms"] )
+      @conf = Config.new( open("mformcgi.conf") )
+      @forms =  FormBuilder.new( @cgi, @conf["forms"] )
    end
    def execute
       rhtml = nil
@@ -104,6 +125,10 @@ class FormCGI
             save
             rhtml = "save.rhtml"
          rescue RequiredFormMissingError => e
+            rhtml = "index.rhtml"
+            #STDERR.puts e.message
+            @error_message = e.message
+         rescue ValidateError => e
             rhtml = "index.rhtml"
             #STDERR.puts e.message
             @error_message = e.message
@@ -138,9 +163,15 @@ class FormCGI
             open( File.join( @conf[:data_dir], filename ), "w" ) do |io|
                io.print content
             end
-            str = filename
+            str = original_filename
          else
-            str = str.read
+            str = @cgi.value( form.id )
+            #STDERR.puts form.id.inspect
+            STDERR.puts form.validate.inspect
+            STDERR.puts str.inspect
+            if form.validate and not Regexp.new( form.validate ) =~ str
+               raise ValidateError, "validate error: #{form.label}:#{str}"
+            end
             if str and not str.empty?
                str.gsub( /\t/, " " ).delete( "\0" )
             end
@@ -156,7 +187,7 @@ class FormCGI
 
    def action
       if @cgi.valid?("action")
-         @cgi.params["action"][0].string
+         @cgi.value( "action" )
       else
          "default"
       end
