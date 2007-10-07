@@ -88,7 +88,7 @@ end
 
 class RequiredFormMissingError < Exception; end
 
-class Uploader
+class FormCGI
    def initialize
       @cgi = CGI.new
       @conf = Config.new( open("uploader.conf") )
@@ -117,7 +117,7 @@ class Uploader
    end
 
    def save
-      now = Time.now.strftime("%Y-%m-%dT%H:%M:%SZ")
+      now = Time.now.strftime("%Y%m%d%H%M%S")
       @saved_data = {}
       @forms.each do |form|
          str = @cgi.params[ form.id ][0]
@@ -140,7 +140,7 @@ class Uploader
             end
             str = filename
          else
-            str = str.string
+            str = str.read
             if str and not str.empty?
                str.gsub( /\t/, " " ).delete( "\0" )
             end

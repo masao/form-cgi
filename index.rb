@@ -4,7 +4,7 @@
 require "uploader.rb"
 
 begin
-   uploader = Uploader.new
+   uploader = FormCGI.new
    uploader.execute
 rescue
    print "Content-Type: text/plain\r\n\r\n"
