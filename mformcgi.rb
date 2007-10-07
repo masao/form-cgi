@@ -150,7 +150,7 @@ class FormCGI
    end
 
    def save
-      now = Time.now.strftime("%Y%m%d%H%M%S")
+      time = Time.now.strftime("%Y%m%d%H%M%S")
       @saved_data = {}
       @forms.each do |form|
          str = @cgi.params[ form.id ][0]
@@ -165,7 +165,7 @@ class FormCGI
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ str
                raise FilenameSuffixError, "validate error: #{form.label}:#{str}"
             end
-            content = str.read
+            content = @cgi.value( form.id )
             #STDERR.puts content.inspect
             #STDERR.puts form.filename.inspect
             filename = nil
@@ -192,7 +192,7 @@ class FormCGI
       #STDERR.puts @forms.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id] or "" }.inspect
       open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
-         io.puts( ( [ now ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
+         io.puts( ( [ time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end
 
