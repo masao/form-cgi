@@ -4,8 +4,8 @@
 require "uploader.rb"
 
 begin
-   uploader = FormCGI.new
-   uploader.execute
+   formapp = FormCGI.new
+   formapp.execute
 rescue
    print "Content-Type: text/plain\r\n\r\n"
    puts "#$! (#{$!.class})"
