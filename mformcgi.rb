@@ -160,9 +160,9 @@ class FormCGISave < FormCGI
       time = Time.now.strftime("%Y%m%d%H%M%S")
       @saved_data = {}
       @forms.each do |form|
-         str = @cgi.params[ form.id ][0]
+         str = @cgi.value( form.id )
          if str.nil? or str.size == 0 and form.require?
-            raise RequiredFormMissingError, "missing form value: #{form.label}:#{str.inspect}"
+            raise RequiredFormMissingError, "missing form value: #{form.label}"
          end
          #STDERR.puts form.class
          case form.class.to_s
