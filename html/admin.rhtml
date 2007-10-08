@@ -5,16 +5,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
 <link rel="stylesheet" href="./css/default.css" type="text/css">
 <title><%=h @conf[:title] %></title>
+<script type="text/javascript" src="sortable.js" charset="iso-8859-1"></script>
 </head>
 <body>
 <h1><%=h @conf[:title] %></h1>
 <p>
 </p>
-<table>
-<tr><th class="time">Time</th>
+<table class="sortable" id="mformcgi_list">
+  <thead><tr><th class="time">Time</th>
 <% @forms.each do |form| %>
   <th class="<%=h form.id %>"><%=h form.label %></th>
 <% end %>
+  </tr></thead>
+  <tbody>
 <%
 @saved_data = {}
 open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
@@ -38,11 +41,12 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
 <% end %>
   </td>
 <% end %>
-</tr>
+  </tr>
 <%
    end
 end
 %>
+</tbody>
 </table>
 <hr>
 <address>
