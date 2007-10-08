@@ -25,15 +25,6 @@ class CGI
    end
 end
 
-class Config
-   def initialize( confio )
-      @conf = YAML.load( confio )
-   end
-   def []( name )
-      @conf[ name.to_s ]
-   end
-end
-
 class FormComponent
    attr_reader :id
    def initialize( id, opt )
@@ -111,42 +102,58 @@ class ValidateError < Exception; end
 class FilenameSuffixError < ValidateError; end
 
 class FormCGI
+   class Config
+      def initialize( confio )
+         @conf = YAML.load( confio )
+      end
+      def []( name )
+         @conf[ name.to_s ]
+      end
+   end
+
    DATA_FILE = "data.csv"
-   def initialize
-      @cgi = CGI.new
+   def initialize( cgi )
+      @cgi = cgi
       @conf = Config.new( open("mformcgi.conf") )
       @forms =  FormBuilder.new( @cgi, @conf["forms"] )
+      @rhtml = "index.rhtml"
    end
-   def execute
-      rhtml = nil
-      case action
-      when "default"
-         rhtml = "index.rhtml"   
-      when "admin"
-         rhtml = "admin.rhtml"   
-      when "save"
-         begin
-            save
-            rhtml = "save.rhtml"
-         rescue RequiredFormMissingError => e
-            rhtml = "index.rhtml"
-            #STDERR.puts e.message
-            @error_message = e.message
-         rescue ValidateError => e
-            rhtml = "index.rhtml"
-            #STDERR.puts e.message
-            @error_message = e.message
-         rescue FilenameSuffixError => e
-            rhtml = "index.rhtml"
-            #STDERR.puts e.message
-            @error_message = e.message
-         end
-      else
-         raise "unknown action: #{action.inspect}"
+   def to_html
+      do_eval_rhtml( @rhtml )
+   end
+
+   include ERB::Util
+   def do_eval_rhtml( rhtml )
+      ERB::new( open( "html/" + rhtml ).read, nil, "<>" ).result( binding )
+   end
+end
+
+class FormCGIAdmin < FormCGI
+   def initialize( cgi )
+      super( cgi )
+      @rhtml = "admin.rhtml"
+   end
+end
+
+class FormCGISave < FormCGI
+   def initialize( cgi )
+      super( cgi )
+      @rhtml = "save.rhtml"
+      begin
+         save
+      rescue RequiredFormMissingError => e
+         @rhtml = "index.rhtml"
+         #STDERR.puts e.message
+         @error_message = e.message
+      rescue ValidateError => e
+         @rhtml = "index.rhtml"
+         #STDERR.puts e.message
+         @error_message = e.message
+      rescue FilenameSuffixError => e
+         @rhtml = "index.rhtml"
+         #STDERR.puts e.message
+         @error_message = e.message
       end
-      html = do_eval_rhtml( rhtml )
-      puts @cgi.header( "text/html; charset=euc-jp" )
-      puts html
    end
 
    def save
@@ -194,18 +201,5 @@ class FormCGI
       open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
          io.puts( ( [ time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
-   end
-
-   def action
-      if @cgi.valid?("action")
-         @cgi.value( "action" )
-      else
-         "default"
-      end
-   end
-
-   include ERB::Util
-   def do_eval_rhtml( rhtml )
-      ERB::new( open( "html/" + rhtml ).read, nil, "<>" ).result( binding )
    end
 end
