@@ -157,7 +157,7 @@ class FormCGISave < FormCGI
    end
 
    def save
-      time = Time.now.strftime("%Y%m%d%H%M%S")
+      @time = Time.now.strftime("%Y%m%d%H%M%S")
       @saved_data = {}
       @forms.each do |form|
          str = @cgi.value( form.id )
@@ -165,7 +165,7 @@ class FormCGISave < FormCGI
             raise RequiredFormMissingError, "missing form value: #{form.label}"
          end
          #STDERR.puts form.class
-         if form.class ==FormFile
+         if form.class == FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ str
@@ -198,7 +198,7 @@ class FormCGISave < FormCGI
       #STDERR.puts @forms.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id] or "" }.inspect
       open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
-         io.puts( ( [ time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
+         io.puts( ( [ @time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end
 end

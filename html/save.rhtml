@@ -12,7 +12,9 @@
 <p class="error_message">Error: <%=h @error_message %></p>
 <% end %>
 <p>
+<% dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a %>
 Save completed.
+<span class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></span>
 </p>
 <dl id="form">
 <% @forms.each do |form| %>
