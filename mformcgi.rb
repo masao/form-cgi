@@ -16,7 +16,7 @@ class CGI
       else
          data = params[opt][0]
          #STDERR.puts data.inspect
-         if multipart? and data.respond_to?( :read )
+         if multipart? and data.original_filename.empty?
             @data[opt] = data.read
          else
             @data[opt] = data
@@ -165,8 +165,7 @@ class FormCGISave < FormCGI
             raise RequiredFormMissingError, "missing form value: #{form.label}"
          end
          #STDERR.puts form.class
-         case form.class.to_s
-         when "FormFile"
+         if form.class ==FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ str
