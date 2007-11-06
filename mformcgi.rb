@@ -168,10 +168,10 @@ class FormCGISave < FormCGI
          if form.class == FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
-            if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ str
-               raise FilenameSuffixError, "validate error: #{form.label}:#{str}"
+            if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
+               raise FilenameSuffixError, "validate error: #{form.label}:#{original_filename}"
             end
-            content = @cgi.value( form.id )
+            content = str.read
             #STDERR.puts content.inspect
             #STDERR.puts form.filename.inspect
             filename = nil
