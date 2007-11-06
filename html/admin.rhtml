@@ -15,6 +15,9 @@
   <thead><tr><th class="time">Time</th>
 <% @forms.each do |form| %>
   <th class="<%=h form.id %>"><%=h form.label %></th>
+  <% if form.class == FormFile %>
+    <th class="<%=h form.id %>_size">size (<%=h form.label %>)</th>
+  <% end %>
 <% end %>
   </tr></thead>
   <tbody>
@@ -22,8 +25,8 @@
 @saved_data = {}
 open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
    io.each do |line|
-      time, *tmp = line.chomp.split( /\t/ )
-      dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( time ).to_a
+      @time, *tmp = line.chomp.split( /\t/ )
+      dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a
 %>
 <tr><td class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></td>
 <% @forms.each_with_index do |form, i| %>
@@ -31,11 +34,12 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
   <td class="<%=h form.id %>">
 <% if form.class == FormFile
       extname = File.extname( tmp[i] )
-      now = time
       filename = nil
       eval( 'filename = "' + form.filename + '"' )
 %>
   <a href="<%=h File.join( @conf[:data_dir], filename ) %>"><%=h tmp[i] %></a>
+  </td>
+  <td class="<%=h form.id %>_size"><%=h File.size( File.join( @conf[:data_dir], filename ) ) %>
 <% else %>
   <%=h tmp[i] %>
 <% end %>
