@@ -96,10 +96,32 @@ class FormBuilder
    end
 end
 
-class RequiredFormMissingError < Exception; end
-
-class ValidateError < Exception; end
-class FilenameSuffixError < ValidateError; end
+class FormCGIError < Exception
+   attr_reader :form, :default_message
+   def initialize( msg = nil, form = nil )
+      super( msg )
+      @form = form
+      @default_message = self.to_s
+   end
+end
+class RequiredFormMissingError < FormCGIError
+   def initialize( msg = nil, form = nil )
+      super( msg, form )
+      @defaule_message = "missing form value"
+   end
+end
+class ValidateError < FormCGIError
+   def initialize( msg = nil, form = nil )
+      super( msg, form )
+      @defaule_message = "validate error"
+   end
+end
+class FilenameSuffixError < FormCGIError
+   def initialize( msg = nil, form = nil )
+      super( msg, form )
+      @defaule_message = "validate error"
+   end
+end
 
 class FormCGI
    class Config
@@ -143,16 +165,17 @@ class FormCGISave < FormCGI
          save
       rescue RequiredFormMissingError => e
          @rhtml = "index.rhtml"
-         #STDERR.puts e.message
-         @error_message = e.message
+         #STDERR.puts e.message.inspect
+         #STDERR.puts e.class.to_s
+         @error = e
       rescue ValidateError => e
          @rhtml = "index.rhtml"
          #STDERR.puts e.message
-         @error_message = e.message
+         @error = e
       rescue FilenameSuffixError => e
          @rhtml = "index.rhtml"
          #STDERR.puts e.message
-         @error_message = e.message
+         @error = e
       end
    end
 
@@ -162,14 +185,14 @@ class FormCGISave < FormCGI
       @forms.each do |form|
          str = @cgi.value( form.id )
          if str.nil? or str.size == 0 and form.require?
-            raise RequiredFormMissingError, "missing form value: #{form.label}"
+            raise RequiredFormMissingError.new( form.label, form )
          end
          #STDERR.puts form.class
          if form.class == FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
-               raise FilenameSuffixError, "validate error: #{form.label}:#{original_filename}"
+               raise FilenameSuffixError.new( "#{form.label}:#{original_filename}", form )
             end
             content = str.read
             #STDERR.puts content.inspect
@@ -184,10 +207,10 @@ class FormCGISave < FormCGI
          else
             str = @cgi.value( form.id )
             #STDERR.puts form.id.inspect
-            STDERR.puts form.validate.inspect
-            STDERR.puts str.inspect
+            #STDERR.puts form.validate.inspect
+            #STDERR.puts str.inspect
             if form.validate and not Regexp.new( form.validate ) =~ str
-               raise ValidateError, "validate error: #{form.label}:#{str}"
+               raise ValidateError.new( "#{form.label}:#{str}", form )
             end
             if str and not str.empty?
                str.gsub( /\t/, " " ).delete( "\0" )
@@ -200,5 +223,18 @@ class FormCGISave < FormCGI
       open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
          io.puts( ( [ @time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
+   end
+
+   def error_message
+      form = @error.form
+      str =
+         if form and form.message and form.message[@error.class.to_s]
+            form.message[@error.class.to_s]
+         elsif @conf["message"] and @conf["message"][@error.class.to_s]
+            @conf["message"][@error.class.to_s]
+         else
+            @error.default_message
+         end
+      str << ": #{@error.message}" if @error.message and not @error.message.empty?
    end
 end
