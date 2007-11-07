@@ -8,8 +8,8 @@
 </head>
 <body>
 <h1><%=h @conf[:title] %></h1>
-<% if @error_message %>
-<p class="error_message">Error: <%=h @error_message %></p>
+<% if @error %>
+<p class="error_message">Error: <%=h error_message %></p>
 <% end %>
 <p>
 <% dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a %>

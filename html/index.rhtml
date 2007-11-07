@@ -8,11 +8,9 @@
 </head>
 <body>
 <h1><%=h @conf[:title] %></h1>
-<% if @error_message %>
-<p class="error_message">Error: <%=h @error_message %></p>
+<% if @error %>
+<p class="error_message">Error: <%=h error_message %></p>
 <% end %>
-<p>
-</p>
 <form id="form" action="<%=h @cgi.script_name %>" method="POST" enctype="multipart/form-data">
 <dl>
 <% @forms.each do |form| %>
