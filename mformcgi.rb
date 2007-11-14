@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# $Id$
+# $Id: mformcgi.rb,v 1.10 20
 
 require "erb"
 require "yaml"
@@ -9,12 +9,16 @@ class CGI
    def valid?( param )
       params[param] and params[param][0] and params[param][0].size > 0
    end
-   def value( opt )
+   def value( opt, i = 0 )
       @data ||= {}
       if @data[opt]
          @data[opt]
       else
-         data = params[opt][0]
+         if i.nil?
+            data = params[opt][
+         else
+            data = params[opt][i]
+         end
          #STDERR.puts data.inspect
          if multipart? and data.original_filename.empty?
             @data[opt] = data.read
@@ -38,6 +42,10 @@ class FormComponent
       case f[ "type" ]
       when "text"
          FormText
+      when "checkbox"
+         FormCheckbox
+      when "radio"
+         FormRadio
       when "file"
          FormFile
       when "submit"
@@ -62,6 +70,24 @@ class FormText < FormComponent
                 %Q| size="#{ @opt["size"] }"|
              end
       %Q|<input type="text" name="#{ @id }" value="#{ escapeHTML @opt["default"].to_s }"#{ size }>|
+   end
+end
+class FormRadio < FormComponent
+   def to_html
+      str = []
+      @opt["choice"].each do |e|
+         str << %Q|<label><input type="radio" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
+      end
+      str.join("\n")
+   end
+end
+class FormCheckbox < FormComponent
+   def to_html
+      str = []
+      @opt["choice"].each do |e|
+         str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
+      end
+      str.join("\n")
    end
 end
 class FormFile < FormComponent
