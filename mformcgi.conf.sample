@@ -6,7 +6,7 @@ message:
   RequiredFormMissingError: "下記の値が入力されていません"
 forms:
   - type: text
-    label: 学籍番号
+    label: 氏名
     size: 10
     require?: true
     normalize: japanese_e2a
