@@ -16,6 +16,9 @@
 Save completed.
 <span class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></span>
 </p>
+<% if @conf["message"]["save_completed"] and not @conf["message"]["save_completed"].empty? %>
+<p><%=h @conf["message"]["save_completed"]%></p>
+<% end %>
 <dl id="form">
 <% @forms.each do |form| %>
   <dt><%=h form.label %>
