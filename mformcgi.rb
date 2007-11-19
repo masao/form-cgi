@@ -15,7 +15,7 @@ class CGI
          @data[opt]
       else
          if i.nil?
-            data = params[opt][
+            data = params[opt]
          else
             data = params[opt][i]
          end
