@@ -11,7 +11,10 @@
 <% if @error %>
 <p class="error_message">Error: <%=h error_message %></p>
 <% end %>
-<form id="form" action="<%=h @cgi.script_name %>" method="POST" enctype="multipart/form-data">
+<form id="form" action="<%=h @cgi.script_name %>" method="POST"
+<% if @forms.find{|f| f.class == FormFile }%>
+enctype="multipart/form-data"
+<% end %>>
 <dl>
 <% @forms.each do |form| %>
   <dt><%=h form.label %>
