@@ -20,7 +20,9 @@ class CGI
             data = params[opt][i]
          end
          #STDERR.puts data.inspect
-         if multipart? and data.original_filename.empty?
+         if data.nil?
+            nil
+         elsif multipart? and data.original_filename.empty?
             @data[opt] = data.read
          else
             @data[opt] = data
