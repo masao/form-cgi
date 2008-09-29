@@ -88,9 +88,8 @@ class FormRadio < FormComponent
       str = []
       @opt["choice"].each do |e|
          str << %Q|<label><input type="radio" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
-         str << %Q|<br/>| if @opt["newline?"]
       end
-      str.join("\n")
+      str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
    end
 end
 class FormCheckbox < FormComponent
@@ -98,9 +97,8 @@ class FormCheckbox < FormComponent
       str = []
       @opt["choice"].each do |e|
          str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
-         str << %Q|<br/>| if @opt["newline?"]
       end
-      str.join("\n")
+      str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
    end
 end
 class FormFile < FormComponent
