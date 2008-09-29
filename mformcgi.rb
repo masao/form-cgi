@@ -44,6 +44,8 @@ class FormComponent
       case f[ "type" ]
       when "text"
          FormText
+      when "textarea"
+         FormTextarea
       when "checkbox"
          FormCheckbox
       when "radio"
@@ -72,6 +74,13 @@ class FormText < FormComponent
                 %Q| size="#{ @opt["size"] }"|
              end
       %Q|<input type="text" name="#{ @id }" value="#{ escapeHTML @opt["default"].to_s }"#{ size }>|
+   end
+end
+class FormTextarea < FormComponent
+   def to_html
+      rows = @opt["rows"] ? %Q| rows="#{ @opt["rows"].to_i }"| : ""
+      cols = @opt["cols"] ? %Q| cols="#{ @opt["cols"].to_i }"| : ""
+      %Q|<textarea#{rows}#{cols}>#{ escapeHTML @opt["default"].to_s }</textarea>|
    end
 end
 class FormRadio < FormComponent
@@ -161,7 +170,7 @@ class FormCGI
       end
    end
 
-   DATA_FILE = "data.txt"
+   DATA_FILE = "data.csv"
    def initialize( cgi )
       @cgi = cgi
       @conf = Config.new( open("mformcgi.conf") )
