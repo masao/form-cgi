@@ -35,3 +35,4 @@ forms:
   - type: checkbox
     label: 選択肢(2)
     choice: [ test1, test2, test3, テスト4 ]
+submit: 入力する

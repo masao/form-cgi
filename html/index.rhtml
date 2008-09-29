@@ -26,13 +26,13 @@ enctype="multipart/form-data"
 <% end %>
   <dd><%= form.to_html %>
 <% if form.note %>
-  <br><span class="note"><%=h form.note %></span>
+  <br><div class="note"><%=h form.note %></div>
 <% end %>
 <% end %>
 </dl>
 <p>
 <input type="hidden" name="action" value="save">
-<input type="submit">
+<input type="submit" value="<%=h @conf["submit"] %>">
 </p>
 </form>
 <hr>

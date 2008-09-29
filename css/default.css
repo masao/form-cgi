@@ -21,6 +21,7 @@
 }
 .note {
   font-size: smaller;
+  margin-top: -1ex;
 }
 p {
   text-indent: 1em;
