@@ -2,6 +2,7 @@ title: レポート提出
 admin_name: Yuka Egusa
 admin_mail: yuka@nier.go.jp
 data_dir: data/
+css: .note { color: blue }
 message:
   top: Here is messeage at the top of page.
   save_completed: Here is messeage for the time of save completed.
