@@ -79,7 +79,7 @@ class FormTextarea < FormComponent
    def to_html
       rows = @opt["rows"] ? %Q| rows="#{ @opt["rows"].to_i }"| : ""
       cols = @opt["cols"] ? %Q| cols="#{ @opt["cols"].to_i }"| : ""
-      %Q|<textarea#{rows}#{cols}>#{ escapeHTML @opt["default"].to_s }</textarea>|
+      %Q|<textarea name="#{ @id }"#{rows}#{cols}>#{ escapeHTML @opt["default"].to_s }</textarea>|
    end
 end
 class FormRadio < FormComponent
