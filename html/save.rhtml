@@ -23,7 +23,7 @@
 <dl id="form">
 <% @forms.each do |form| %>
   <dt><%=h form.label %>
-  <dd><%= @saved_data[ form.id ].split( /\\n/ ).map{|e| h e }.join( "<br/>" ) %>
+  <dd><%= @saved_data[ form.id ].to_s.split( /\\n/ ).map{|e| h e }.join( "<br/>" ) %>
 <% end %>
 </dl>
 <hr>
