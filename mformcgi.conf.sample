@@ -3,6 +3,8 @@ admin_name: Yuka Egusa
 admin_mail: yuka@nier.go.jp
 data_dir: data/
 message:
+  top: Here is messeage at the top of page.
+  save_completed: Here is messeage for the time of save completed.
   RequiredFormMissingError: "下記の値が入力されていません"
 forms:
   - type: text
