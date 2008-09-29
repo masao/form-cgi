@@ -41,7 +41,7 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
   </td>
   <td class="<%=h form.id %>_size"><%=h File.size( File.join( @conf[:data_dir], filename ) ) %>
 <% else %>
-  <%=h tmp[i] %>
+  <%= tmp[i].to_s.split(/\\n/).map{|e| h e }.join("<br/>") %>
 <% end %>
   </td>
 <% end %>

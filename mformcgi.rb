@@ -5,20 +5,19 @@ require "erb"
 require "yaml"
 require "cgi"
 
+$KCODE = "euc-jp"
+
 class CGI
    def valid?( param )
       params[param] and params[param][0] and params[param][0].size > 0
    end
-   def value( opt, i = 0 )
+   def value( opt )
       @data ||= {}
       if @data[opt]
          @data[opt]
       else
-         if i.nil?
-            data = params[opt]
-         else
-            data = params[opt][i]
-         end
+         data = params[opt]
+         data = params[opt][0] if data.size <= 1
          #STDERR.puts data.inspect
          if data.nil?
             nil
@@ -170,7 +169,7 @@ class FormCGI
       end
    end
 
-   DATA_FILE = "data.csv"
+   DATA_FILE = "data.txt"
    def initialize( cgi )
       @cgi = cgi
       @conf = Config.new( open("mformcgi.conf") )
@@ -225,7 +224,8 @@ class FormCGISave < FormCGI
             raise RequiredFormMissingError.new( form.label, form )
          end
          #STDERR.puts form.class
-         if form.class == FormFile
+         case form.class
+         when FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
@@ -242,6 +242,7 @@ class FormCGISave < FormCGI
             end
             str = original_filename
          else
+            # STDERR.puts [ form.class, @cgi.params[form.id] ].inspect
             str = @cgi.value( form.id )
             #STDERR.puts form.id.inspect
             #STDERR.puts form.validate.inspect
@@ -249,8 +250,14 @@ class FormCGISave < FormCGI
             if form.validate and not Regexp.new( form.validate ) =~ str
                raise ValidateError.new( "#{form.label}:#{str}", form )
             end
-            if str and not str.empty?
-               str.gsub( /\t/, " " ).delete( "\0" )
+         end
+         if str and not str.empty?
+            if str.respond_to?( :each ) 
+               str = str.map{|e|
+                  e.gsub( /[\t\n]/, " " ).delete( "\0" )
+               }.join( "\\n" )
+            else
+               str.gsub( /\n/, "\\n" ).gsub(/\t/, " " ).delete( "\0" )
             end
          end
          @saved_data[ form.id ] = str
