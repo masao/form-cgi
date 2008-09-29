@@ -3,8 +3,11 @@
 <html lang="ja">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
-<link rel="stylesheet" href="./css/default.css" type="text/css">
 <title><%=h @conf[:title] %></title>
+<link rel="stylesheet" href="./css/default.css" type="text/css">
+<% if @conf["css"] %>
+<style type="text/css"><%=h @conf["css"] %></style>
+<% end %>
 </head>
 <body>
 <h1><%=h @conf[:title] %></h1>
