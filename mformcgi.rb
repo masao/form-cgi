@@ -161,7 +161,7 @@ class FormCGI
       end
    end
 
-   DATA_FILE = "data.csv"
+   DATA_FILE = "data.txt"
    def initialize( cgi )
       @cgi = cgi
       @conf = Config.new( open("mformcgi.conf") )
