@@ -86,7 +86,8 @@ class FormRadio < FormComponent
    def to_html
       str = []
       @opt["choice"].each do |e|
-         str << %Q|<label><input type="radio" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
+         checked = %Q| checked="checked"| if @opt["default"].to_s == e
+         str << %Q|<label><input type="radio" name="#{ @id }" value="#{ escapeHTML e }"#{checked}>#{ escapeHTML e }</input></label>|
       end
       str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
    end
@@ -95,7 +96,8 @@ class FormCheckbox < FormComponent
    def to_html
       str = []
       @opt["choice"].each do |e|
-         str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }">#{ escapeHTML e }</input></label>|
+         checked = %Q| checked="checked"| if @opt["default"].to_s == e or @opt["default"].kind_of?( Array ) and @opt["default"].include?( e )
+         str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }"#{checked}>#{ escapeHTML e }</input></label>|
       end
       str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
    end
