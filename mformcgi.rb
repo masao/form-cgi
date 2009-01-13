@@ -49,6 +49,8 @@ class FormComponent
          FormCheckbox
       when "radio"
          FormRadio
+      when "select"
+         FormSelect
       when "file"
          FormFile
       when "submit"
@@ -100,6 +102,16 @@ class FormCheckbox < FormComponent
          str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }"#{checked}>#{ escapeHTML e }</input></label>|
       end
       str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
+   end
+end
+class FormSelect < FormComponent
+   def to_html
+      str = %Q|<select name="#{ @id }">|
+      @opt["choice"].each do |e|
+         selected = %Q| selected="selected"| if @opt["default"].to_s == e
+         str << %Q|<option value="#{ escapeHTML e }"#{ selected }>#{ escapeHTML e }</option>|
+      end
+      str << "</select>"
    end
 end
 class FormFile < FormComponent
