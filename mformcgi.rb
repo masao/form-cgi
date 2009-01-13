@@ -238,8 +238,7 @@ class FormCGISave < FormCGI
             raise RequiredFormMissingError.new( form.label, form )
          end
          #STDERR.puts form.class
-         case form.class
-         when FormFile
+         if form.class == FormFile
             original_filename = str.original_filename
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
@@ -265,6 +264,7 @@ class FormCGISave < FormCGI
                raise ValidateError.new( "#{form.label}:#{str}", form )
             end
          end
+         #STDERR.puts "[ #{form.class}, STR: #{str.inspect} ]"
          if str and not str.empty?
             if str.respond_to?( :each ) 
                str = str.map{|e|
