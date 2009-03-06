@@ -12,7 +12,9 @@
 <p>
 </p>
 <table class="sortable" id="mformcgi_list">
-  <thead><tr><th class="time">Time</th>
+  <thead><tr>
+    <th class="idx">No.</th>
+    <th class="time">Time</th>
 <% @forms.each do |form| %>
   <th class="<%=h form.id %>"><%=h form.label %></th>
   <% if form.class == FormFile %>
@@ -24,11 +26,11 @@
 <%
 @saved_data = {}
 open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
-   io.each do |line|
+   io.each_with_index do |line, i|
       @time, *tmp = line.chomp.split( /\t/ )
       dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a
 %>
-<tr><td class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></td>
+<tr><td class="number"><%= i+1 %></td><td class="time"><%=h y %>-<%=h m %>-<%=h d %> <%=h hh %>:<%=h mm %></td>
 <% @forms.each_with_index do |form, i| %>
 <%    @saved_data[ form.id ] = tmp[i] %>
   <td class="<%=h form.id %>">
