@@ -26,7 +26,7 @@ forms:
     label: ファイル
     require?: true
     filename: "#{@saved_data['form0']}-#{@time}#{extname}"
-    file_suffix: (doc|docx|txt|zip|xls)$
+    filename_suffix: (doc|docx|txt|zip|xls)$
     note: テキストファイル、Wordファイル、Excelファイルのみアップロードできます。
     message:
       FilenameSuffixError: "ファイルの種類が違います。テキストファイル、Wordファイル、Excelファイルのみアップロードできます"
