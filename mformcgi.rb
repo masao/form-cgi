@@ -157,19 +157,19 @@ end
 class RequiredFormMissingError < FormCGIError
    def initialize( msg = nil, form = nil )
       super( msg, form )
-      @defaule_message = "missing form value"
+      @default_message = "missing form value"
    end
 end
 class ValidateError < FormCGIError
    def initialize( msg = nil, form = nil )
       super( msg, form )
-      @defaule_message = "validate error"
+      @default_message = "validate error"
    end
 end
 class FilenameSuffixError < FormCGIError
    def initialize( msg = nil, form = nil )
       super( msg, form )
-      @defaule_message = "validate error"
+      @default_message = "validate error"
    end
 end
 
@@ -248,7 +248,7 @@ class FormCGISave < FormCGI
             #STDERR.puts content.inspect
             #STDERR.puts form.filename.inspect
             filename = nil
-            eval( 'filename = "' + form.filename + '"', binding )
+            eval( %Q[filename = "#{form.filename}"], binding )
             #STDERR.puts filename.inspect
             open( File.join( @conf[:data_dir], filename ), "w" ) do |io|
                io.print content
