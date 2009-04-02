@@ -55,6 +55,8 @@ class FormComponent
          FormFile
       when "submit"
          FormSubmit
+      when "hidden"
+         FormHidden
       else
          raise "Unknown form type: #{ f["type"].inspect }"
       end
@@ -122,6 +124,11 @@ end
 class FormSubmit < FormComponent
    def to_html
       %Q|<input type="submit" name="#{ @id }" value=""></input>|
+   end
+end
+class FormHidden < FormComponent
+   def to_html
+      %Q|<input type="hidden" name="#{ @id }" value="#{ @opt["value"] }"></input>|
    end
 end
 

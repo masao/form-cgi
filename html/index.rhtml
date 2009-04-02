@@ -23,13 +23,17 @@ enctype="multipart/form-data"
 <% end %>>
 <dl>
 <% @forms.each do |form| %>
-  <dt><%=h form.label %>
+<% if form.class == FormHidden %>
+<dt><%= form.to_html %>
+<% else %>
+<dt><%=h form.label %>
 <% if form.require? %>
       <span class="require">*</span>
 <% end %>
   <dd><%= form.to_html %>
 <% if form.note %>
   <div class="note"><%=h form.note %></div>
+<% end %>
 <% end %>
 <% end %>
 </dl>
