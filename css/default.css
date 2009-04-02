@@ -26,6 +26,9 @@
 p {
   text-indent: 1em;
 }
+#form textarea {
+  width: 100%;
+}
 
 /*** from sotable.js ***/
 /* Copyright 2006 Joost de Valk */
