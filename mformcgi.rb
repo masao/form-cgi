@@ -237,6 +237,13 @@ class FormCGISave < FormCGI
    end
 
    def save
+      unless File.directory?( @conf[:data_dir] ) or File.writable?( @conf[:data_dir] )
+         raise "Your data directory [#{ @conf[:data_dir] }] does not exist, or is not writable. Please check the permission."
+      end
+      data_file = File.join( @conf[:data_dir], DATA_FILE )
+      unless File.writable?( data_file )
+         raise "Your data file [#{ data_file }] is not writable. Please check the permission."
+      end
       @time = Time.now.strftime("%Y%m%d%H%M%S")
       @saved_data = {}
       @forms.each do |form|
@@ -285,7 +292,7 @@ class FormCGISave < FormCGI
       end
       #STDERR.puts @forms.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id] or "" }.inspect
-      open( File.join( @conf[:data_dir], DATA_FILE ), "a" ) do |io|
+      open( data_file, "a" ) do |io|
          io.puts( ( [ @time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end
