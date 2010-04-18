@@ -285,7 +285,7 @@ class FormCGISave < FormCGI
                   e.gsub( /[\t\n]/, " " ).delete( "\0" )
                }.join( "\\n" )
             else
-               str.gsub( /\n/, "\\n" ).gsub(/\t/, " " ).delete( "\0" )
+               str.gsub( /\r?\n/, "\\n" ).gsub(/\t/, " " ).delete( "\0" )
             end
          end
          @saved_data[ form.id ] = str
