@@ -1,39 +1,39 @@
-title: ¥ì¥İ¡¼¥ÈÄó½Ğ
+title: ãƒ¬ãƒãƒ¼ãƒˆæå‡º
 admin_name: Yuka Egusa
 admin_mail: yuka@nier.go.jp
 data_dir: data/
-css: .note { color: blue }
+css: ".note { color: blue }"
 message:
   top: Here is messeage at the top of page.
   save_completed: Here is messeage for the time of save completed.
-  RequiredFormMissingError: "²¼µ­¤ÎÃÍ¤¬ÆşÎÏ¤µ¤ì¤Æ¤¤¤Ş¤»¤ó"
+  RequiredFormMissingError: "ä¸‹è¨˜ã®å€¤ãŒå…¥åŠ›ã•ã‚Œã¦ã„ã¾ã›ã‚“"
 forms:
   - type: text
-    label: »áÌ¾
+    label: æ°å
     size: 10
     require?: true
     normalize: japanese_e2a
     validate: ^\d{7}$
     message:
-      ValidateError: "½ñ¼°¤¬¹ç¤Ã¤Æ¤¤¤Ş¤»¤ó¡£7·å¤ÎÈ¾³Ñ±Ñ¿ô»ú¤òÆşÎÏ¤·¤Æ¤¯¤À¤µ¤¤"
-    note: "7·å±Ñ¿ô»ú¤Î³ØÀÒÈÖ¹æ¤òÆşÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£"
+      ValidateError: "æ›¸å¼ãŒåˆã£ã¦ã„ã¾ã›ã‚“ã€‚7æ¡ã®åŠè§’è‹±æ•°å­—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„"
+    note: "7æ¡è‹±æ•°å­—ã®å­¦ç±ç•ªå·ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚"
   - type: text
-    label: »áÌ¾
+    label: æ°å
     require?: true
   - type: text
-    label: ¥³¥á¥ó¥È
+    label: ã‚³ãƒ¡ãƒ³ãƒˆ
   - type: file
-    label: ¥Õ¥¡¥¤¥ë
+    label: ãƒ•ã‚¡ã‚¤ãƒ«
     require?: true
     filename: "#{@saved_data['form0']}-#{@time}#{extname}"
     filename_suffix: (doc|docx|txt|zip|xls)$
-    note: ¥Æ¥­¥¹¥È¥Õ¥¡¥¤¥ë¡¢Word¥Õ¥¡¥¤¥ë¡¢Excel¥Õ¥¡¥¤¥ë¤Î¤ß¥¢¥Ã¥×¥í¡¼¥É¤Ç¤­¤Ş¤¹¡£
+    note: ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã€Wordãƒ•ã‚¡ã‚¤ãƒ«ã€Excelãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã™ã€‚
     message:
-      FilenameSuffixError: "¥Õ¥¡¥¤¥ë¤Î¼ïÎà¤¬°ã¤¤¤Ş¤¹¡£¥Æ¥­¥¹¥È¥Õ¥¡¥¤¥ë¡¢Word¥Õ¥¡¥¤¥ë¡¢Excel¥Õ¥¡¥¤¥ë¤Î¤ß¥¢¥Ã¥×¥í¡¼¥É¤Ç¤­¤Ş¤¹"
+      FilenameSuffixError: "ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡ãŒé•ã„ã¾ã™ã€‚ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã€Wordãƒ•ã‚¡ã‚¤ãƒ«ã€Excelãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã™"
   - type: radio
-    label: ÁªÂò»è
+    label: é¸æŠè‚¢
     choice: [ test1, test2 ]
   - type: checkbox
-    label: ÁªÂò»è(2)
-    choice: [ test1, test2, test3, ¥Æ¥¹¥È4 ]
-submit: ÆşÎÏ¤¹¤ë
+    label: é¸æŠè‚¢(2)
+    choice: [ test1, test2, test3, ãƒ†ã‚¹ãƒˆ4 ]
+submit: å…¥åŠ›ã™ã‚‹

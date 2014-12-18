@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # $Id$
 
-require "mformcgi.rb"
+require_relative "mformcgi.rb"
 
 begin
    cgi = CGI.new
