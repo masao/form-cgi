@@ -193,7 +193,7 @@ class FormCGI
    DATA_FILE = "data.txt"
    def initialize( cgi )
       @cgi = cgi
-      @conf = Config.new( open("mformcgi.conf") )
+      @conf = Config.new( open("mformcgi.conf", "r:utf-8") )
       @forms =  FormBuilder.new( @cgi, @conf["forms"] )
       @rhtml = "index.rhtml"
    end
@@ -203,7 +203,7 @@ class FormCGI
 
    include ERB::Util
    def do_eval_rhtml( rhtml )
-      ERB::new( open( "html/" + rhtml ).read, nil, "<>" ).result( binding )
+      ERB::new( open( "html/" + rhtml, "r:utf-8" ).read, nil, "<>" ).result( binding )
    end
 end
 
@@ -241,10 +241,11 @@ class FormCGISave < FormCGI
          raise "Your data directory [#{ @conf[:data_dir] }] does not exist, or is not writable. Please check the permission."
       end
       data_file = File.join( @conf[:data_dir], DATA_FILE )
-      unless File.writable?( data_file )
+      if File.exist?( data_file ) and not File.writable?( data_file )
          raise "Your data file [#{ data_file }] is not writable. Please check the permission."
       end
       @time = Time.now.strftime("%Y%m%d%H%M%S")
+      @time.force_encoding("utf-8")
       @saved_data = {}
       @forms.each do |form|
          str = @cgi.value( form.id )
@@ -254,6 +255,7 @@ class FormCGISave < FormCGI
          #STDERR.puts form.class
          if form.class == FormFile
             original_filename = str.original_filename
+            original_filename.force_encoding( "utf-8" )
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
                raise FilenameSuffixError.new( "#{form.label}:#{original_filename}", form )
@@ -291,8 +293,9 @@ class FormCGISave < FormCGI
          @saved_data[ form.id ] = str
       end
       #STDERR.puts @forms.inspect
-      #STDERR.puts @forms.map{|e| @saved_data[e.id] or "" }.inspect
-      open( data_file, "a" ) do |io|
+      #STDERR.puts @forms.map{|e| @saved_data[e.id].to_s or "" }.inspect
+      #STDERR.puts @forms.map{|e| @saved_data[e.id].to_s.encoding or "" }.inspect
+      open( data_file, "a:utf-8" ) do |io|
          io.puts( ( [ @time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end
