@@ -5,7 +5,7 @@ require "erb"
 require "yaml"
 require "cgi"
 
-#$KCODE = "euc-jp"
+Encoding.default_external = "utf-8"
 
 class CGI
    def valid?( param )
@@ -193,7 +193,7 @@ class FormCGI
    DATA_FILE = "data.txt"
    def initialize( cgi )
       @cgi = cgi
-      @conf = Config.new( open("mformcgi.conf", "r:utf-8") )
+      @conf = Config.new( open("mformcgi.conf") )
       @forms =  FormBuilder.new( @cgi, @conf["forms"] )
       @rhtml = "index.rhtml"
    end
@@ -203,7 +203,7 @@ class FormCGI
 
    include ERB::Util
    def do_eval_rhtml( rhtml )
-      ERB::new( open( "html/" + rhtml, "r:utf-8" ).read, nil, "<>" ).result( binding )
+      ERB::new( open( "html/" + rhtml, "r" ).read, nil, "<>" ).result( binding )
    end
 end
 
@@ -245,7 +245,6 @@ class FormCGISave < FormCGI
          raise "Your data file [#{ data_file }] is not writable. Please check the permission."
       end
       @time = Time.now.strftime("%Y%m%d%H%M%S")
-      @time.force_encoding("utf-8")
       @saved_data = {}
       @forms.each do |form|
          str = @cgi.value( form.id )
@@ -295,7 +294,7 @@ class FormCGISave < FormCGI
       #STDERR.puts @forms.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id].to_s or "" }.inspect
       #STDERR.puts @forms.map{|e| @saved_data[e.id].to_s.encoding or "" }.inspect
-      open( data_file, "a:utf-8" ) do |io|
+      open( data_file, "a" ) do |io|
          io.puts( ( [ @time ] + @forms.map{|e| @saved_data[ e.id ] or "" } ).join("\t") )
       end
    end
