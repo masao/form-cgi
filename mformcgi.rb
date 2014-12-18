@@ -5,7 +5,7 @@ require "erb"
 require "yaml"
 require "cgi"
 
-$KCODE = "euc-jp"
+#$KCODE = "euc-jp"
 
 class CGI
    def valid?( param )
