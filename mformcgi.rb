@@ -18,7 +18,6 @@ class CGI
       else
          data = params[opt]
          data = params[opt][0] if data.size <= 1
-         #STDERR.puts data.inspect
          if data.nil?
             nil
          elsif multipart? and data.original_filename.empty?
@@ -211,6 +210,69 @@ class FormCGIAdmin < FormCGI
    def initialize( cgi )
       super( cgi )
       @rhtml = "admin.rhtml"
+   end
+
+   def load_data( opts = {} )
+      results = []
+      identifiers = []
+      @forms.each_with_index do |form, i|
+         identifiers << i if form.identifier?
+      end
+      identifiers.compact!
+      open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
+         lines = io.readlines
+         if identifiers.empty? or not @cgi.valid?( "ignore_duplicate" )
+            tmp = []
+            lines.each_with_index do |line, i|
+               time, *data = line.chomp.split( /\t/ )
+               tmp << [ i, time, data ]
+            end
+            lines = tmp
+         else
+            data = {}
+            lines.reverse.each_with_index do |line, i|
+               time, *tmp = line.chomp.split( /\t/ )
+               key = tmp.values_at( *identifiers )
+               data[key] = [ lines.size - i-1, time, tmp ] if not data[key]
+            end
+            lines = data.values.sort_by{|e| e }
+         end
+         lines.each do |i, time, data|
+            row = []
+            dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( time ).to_a
+            time = Time.new( y, m, d, hh, mm, ss )
+            row << i + 1
+            row << time
+            @forms.each_with_index do |form, i|
+               if form.class == FormFile
+                  extname = File.extname( data[i] )
+                  filename = nil
+                  eval( 'filename = "' + form.filename + '"' )
+                  row << filename
+                  row << File.size( File.join( @conf[:data_dir], filename ) )
+               else
+                  row << data[i].to_s.gsub( /\\n/, "\n" )
+               end
+            end
+            results << row
+         end
+      end
+      results
+   end
+
+   def to_csv
+     require "csv"
+     header = [ 'No.', 'Time' ]
+     @forms.each do |form|
+       header << form.label
+       header << "size (#{ form.label })" if form.class == FormFile
+     end
+     CSV.generate do |csv|
+       csv << header
+       load_data.each do |row|
+         csv << row
+       end
+     end
    end
 end
 
