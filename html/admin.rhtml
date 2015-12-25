@@ -2,6 +2,8 @@
 	"http://www.w3.org/TR/html4/strict.dtd">
 <html lang="ja">
 <head>
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="./css/default.css" type="text/css">
 <title><%=h @conf[:title] %></title>
@@ -68,7 +70,7 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
       end
       lines = data.values.sort_by{|e| e }
    end
-   STDERR.puts lines[0].inspect
+   #STDERR.puts lines[0].inspect
    lines.each do |i, time, tmp|
       @time = time
       dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a

@@ -127,7 +127,11 @@ class FormSubmit < FormComponent
 end
 class FormHidden < FormComponent
    def to_html
-      %Q|<input type="hidden" name="#{ @id }" value="#{ @opt["value"] }"></input>|
+      value = @opt["value"]
+      unless value and @opt["default"]
+        value = eval(@opt["default"], binding)
+      end
+      %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML value }"></input>|
    end
 end
 
