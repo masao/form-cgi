@@ -181,11 +181,18 @@ end
 
 class FormCGI
    class Config
+      attr_reader :conf
       def initialize( confio )
          @conf = YAML.load( confio )
       end
       def []( name )
          @conf[ name.to_s ]
+      end
+      def []=( name, value )
+         @conf[ name.to_s ] = value
+      end
+      def update( config )
+        @conf.update( config.conf )
       end
    end
 
@@ -204,6 +211,35 @@ class FormCGI
    def do_eval_rhtml( rhtml )
       ERB::new( open( "html/" + rhtml, "r" ).read, nil, "<>" ).result( binding )
    end
+end
+
+class FormCGIConf < FormCGI
+  DATA_DIR = @conf ? @conf[:data_dir] : "data"
+  def initialize( cgi )
+    @cgi = cgi
+    @rhtml = "conf.html"
+    @conf = {}
+    begin
+      @conf = Config.new( open("mformcgi.conf") )
+      conf2_fname = File.join( DATA_DIR, "mformcgi.conf" )
+      conf2 = Config.new( open conf2_fname )
+      @conf.update( conf2 )
+    rescue
+    end
+  end
+end
+class FormCGIConfSave < FormCGIConf
+  def initialize( cgi )
+    super( cgi )
+    @rhtml = "save.rhtml"
+    save
+  end
+  def save
+    @conf["title"] = @cgi.value( "title" )
+    @conf["admin_name"] = @cgi.value( "admin_name" )
+    @conf["admin_email"] = @cgi.value( "admin_email" )
+    @conf["css"] = @cgi.value( "css" )
+  end
 end
 
 class FormCGIAdmin < FormCGI

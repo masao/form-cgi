@@ -16,6 +16,15 @@
   text-align:	0px;
   padding-left:	10px;
 }
+#form .configuration dt {
+  display: block;
+  float: none;
+  margin-top: 1ex;
+}
+#form .configuration dd {
+  border: none;
+  margin-left: 4em;
+}
 .require {
   color: red;
 }

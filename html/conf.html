@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="./css/default.css" type="text/css">
+<title><%=h @conf[:title] %></title>
+<script type="text/javascript" src="sortable.js" charset="iso-8859-1"></script>
+<style type="text/css">
+.toggle-duplicate {
+  font-size: smaller;
+  text-align: right;
+}
+</style>
+<% if @conf[:css] %>
+<style type="text/css"><%=h @conf[:css] %></style>
+<% end %>
+</head>
+<body>
+<h1><%=h @conf[:title] %></h1>
+<h2>共通設定</h2>
+<form id="form" action="<%=h @cgi.script_name %>" method="POST">
+<input type="hidden" name="action" value="save">
+<dl class="configuration">
+<dt>タイトル (title)</dt>
+<dd><input type="text" name="title" value="<%=h @conf[:title] %>"></dd>
+<dt>管理者名 (admin_name)</dt>
+<dd><input type="text" name="admin_name" value="<%=h @conf[:admin_name] %>"></dd>
+<dt>管理者メールアドレス (admin_mail)</dt>
+<dd><input type="text" name="admin_mail" value="<%=h @conf[:admin_mail] %>"></dd>
+<dt>CSS設定 (css)</dt>
+<dd><textarea name="css" rows="3" cols="100"><%=h @conf[:css] %></textarea></dd>
+</dl>
+<div class="button">
+<input type="submit" value="送信する">
+</div>
+</form>
+<hr>
+<address>
+<%=h @conf[:admin_name] %>
+<% if @conf[:admin_mail] %>
+  <a href="<%=h @conf[:admin_mail] %>"><%=h @conf[:admin_mail] %></a>
+<% end %>
+</address>
+</body>
+</html>
