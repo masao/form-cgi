@@ -13,6 +13,13 @@
   font-size: smaller;
   text-align: right;
 }
+<% @forms.each do |form| %>
+  <% if form.class == FormFile %>
+.<%=h form.id %> {
+  word-break: break-all;
+}
+  <% end %>
+<% end %>
 </style>
 <% if @conf["css"] %>
 <style type="text/css"><%=h @conf["css"] %></style>
