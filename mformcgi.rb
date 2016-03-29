@@ -128,17 +128,42 @@ end
 class FormHidden < FormComponent
    def to_html
       value = @opt["value"]
-      unless value and @opt["default"]
-        value = eval(@opt["default"], binding)
+      unless value
+         if @opt["default"]
+            value = eval(@opt["default"], binding)
+         else
+            value = ""
+         end
       end
-      value = "" unless value
       %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML value }"></input>|
    end
 end
 
 class FormBuilder
    include Enumerable
-   def initialize( cgi, form_conf )
+   def initialize( cgi, form_conf, conf = {} )
+      identifiers = []
+      form_conf.each_with_index do |f, idx|
+         identifiers << idx if f["identifier?"]
+      end
+      identifiers.compact!
+      if not identifiers.empty?
+         data_fname = File.join( conf[:data_dir], FormCGI::DATA_FILE )
+	 if File.readable? data_fname
+            open( data_fname ) do |io|
+   	       lines = io.readlines
+               lines.each_with_index do |line, i|
+                  time, *tmp = line.chomp.split( /\t/ )
+                  key = tmp.values_at( *identifiers )
+                  value = eval(form_conf[*identifiers]["default"], binding)
+                  if key.first == value
+                    @saved_data = tmp
+                  end
+               end
+            end
+	 end
+      end
+
       @forms = []
       form_conf.each_with_index do |f, idx|
          klass = FormComponent.form2class( f )
@@ -146,6 +171,8 @@ class FormBuilder
          default = nil
          if cgi.valid?( name )
             f["default"] = cgi.value( name )
+	 elsif f["default"].nil? and @saved_data
+	    f["default"] = @saved_data[idx]
          end
          @forms << klass.new( name, f )
       end
@@ -205,7 +232,7 @@ class FormCGI
    def initialize( cgi )
       @cgi = cgi
       @conf = Config.new( open("mformcgi.conf") )
-      @forms =  FormBuilder.new( @cgi, @conf["forms"] )
+      @forms =  FormBuilder.new( @cgi, @conf["forms"], @conf )
       @rhtml = "index.rhtml"
    end
    def to_html

@@ -59,6 +59,8 @@ identifiers.compact!
   <tbody>
 <%
 @saved_data = {}
+data_fname = File.join( @conf[:data_dir], DATA_FILE )
+if File.readable? data_fname
 open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
    lines = io.readlines
    if identifiers.empty? or not @cgi.valid?( "ignore_duplicate" )
@@ -79,6 +81,7 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
    end
    #STDERR.puts lines[0].inspect
    lines.each do |i, time, tmp|
+      next if time.nil? or time.strip.empty?
       @time = time
       dummy, y, m, d, hh, mm, ss = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/.match( @time ).to_a
 %>
@@ -101,6 +104,7 @@ open( File.join( @conf[:data_dir], DATA_FILE ) ) do |io|
 <% end %>
   </tr>
 <%
+      end
    end
 end
 %>
