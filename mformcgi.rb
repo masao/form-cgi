@@ -5,7 +5,7 @@ require "erb"
 require "yaml"
 require "cgi"
 
-Encoding.default_external = "utf-8"
+Encoding.default_external = "utf-8" if defined? Encoding
 
 class CGI
    def valid?( param )
@@ -131,6 +131,7 @@ class FormHidden < FormComponent
       unless value and @opt["default"]
         value = eval(@opt["default"], binding)
       end
+      value = "" unless value
       %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML value }"></input>|
    end
 end
@@ -356,7 +357,7 @@ class FormCGISave < FormCGI
          #STDERR.puts form.class
          if form.class == FormFile
             original_filename = str.original_filename
-            original_filename.force_encoding( "utf-8" )
+            original_filename.force_encoding( "utf-8" ) if original_filename.respond_to? :force_encoding
             extname = File.extname( original_filename )
             if form.filename_suffix and not Regexp.new( form.filename_suffix ) =~ original_filename
                raise FilenameSuffixError.new( "#{form.label}:#{original_filename}", form )
