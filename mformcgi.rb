@@ -131,10 +131,9 @@ class FormHidden < FormComponent
       unless value
          if @opt["default"]
             value = eval(@opt["default"], binding)
-         else
-            value = ""
          end
       end
+      value = "" unless value
       %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML value }"></input>|
    end
 end
@@ -171,8 +170,8 @@ class FormBuilder
          default = nil
          if cgi.valid?( name )
             f["default"] = cgi.value( name )
-	 elsif f["default"].nil? and @saved_data
-	    f["default"] = @saved_data[idx]
+	 elsif f["default"].nil? and @saved_data and @saved_data[idx]
+	    f["default"] = @saved_data[idx].gsub(/\\n/, "\n")
          end
          @forms << klass.new( name, f )
       end
