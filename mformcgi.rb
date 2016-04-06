@@ -60,6 +60,9 @@ class FormComponent
          raise "Unknown form type: #{ f["type"].inspect }"
       end
    end
+   def value
+      @opt["value"] ? @opt["value"] : @opt["default"]
+   end
    def method_missing( name, *args )
       @opt[ name.to_s ]
       #else
@@ -75,21 +78,21 @@ class FormText < FormComponent
       size = if @opt["size"]
                 %Q| size="#{ @opt["size"] }"|
              end
-      %Q|<input type="text" name="#{ @id }" value="#{ escapeHTML @opt["default"].to_s }"#{ size }>|
+      %Q|<input type="text" name="#{ @id }" value="#{ escapeHTML value.to_s }"#{ size }>|
    end
 end
 class FormTextarea < FormComponent
    def to_html
       rows = @opt["rows"] ? %Q| rows="#{ @opt["rows"].to_i }"| : ""
       cols = @opt["cols"] ? %Q| cols="#{ @opt["cols"].to_i }"| : ""
-      %Q|<textarea name="#{ @id }"#{rows}#{cols}>#{ escapeHTML @opt["default"].to_s }</textarea>|
+      %Q|<textarea name="#{ @id }"#{rows}#{cols}>#{ escapeHTML value.to_s }</textarea>|
    end
 end
 class FormRadio < FormComponent
    def to_html
       str = []
       @opt["choice"].each do |e|
-         checked = %Q| checked="checked"| if @opt["default"].to_s == e
+         checked = %Q| checked="checked"| if value.to_s == e
          str << %Q|<label><input type="radio" name="#{ @id }" value="#{ escapeHTML e }"#{checked}>#{ escapeHTML e }</input></label>|
       end
       str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
@@ -99,7 +102,7 @@ class FormCheckbox < FormComponent
    def to_html
       str = []
       @opt["choice"].each do |e|
-         checked = %Q| checked="checked"| if @opt["default"].to_s == e or @opt["default"].kind_of?( Array ) and @opt["default"].include?( e )
+         checked = %Q| checked="checked"| if value.to_s == e or @opt["default"].kind_of?( Array ) and @opt["default"].include?( e )
          str << %Q|<label><input type="checkbox" name="#{ @id }" value="#{ escapeHTML e }"#{checked}>#{ escapeHTML e }</input></label>|
       end
       str.join( @opt["newline?"] ? "<br/>\n" : "\n" )
@@ -109,7 +112,7 @@ class FormSelect < FormComponent
    def to_html
       str = %Q|<select name="#{ @id }">|
       @opt["choice"].each do |e|
-         selected = %Q| selected="selected"| if @opt["default"].to_s == e
+         selected = %Q| selected="selected"| if value.to_s == e
          str << %Q|<option value="#{ escapeHTML e }"#{ selected }>#{ escapeHTML e }</option>|
       end
       str << "</select>"
@@ -127,14 +130,14 @@ class FormSubmit < FormComponent
 end
 class FormHidden < FormComponent
    def to_html
-      value = @opt["value"]
-      unless value
+      s_value = @opt["value"]
+      unless s_value
          if @opt["default"]
-            value = eval(@opt["default"], binding)
+            s_value = eval(@opt["default"], binding)
          end
       end
-      value = "" unless value
-      %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML value }"></input>|
+      s_value = "" unless value
+      %Q|<input type="hidden" name="#{ @id }" value="#{ escapeHTML s_value }"></input>|
    end
 end
 
@@ -169,7 +172,7 @@ class FormBuilder
          name = "form#{idx}"
          default = nil
          if cgi.valid?( name )
-            f["default"] = cgi.value( name )
+            f["value"] = cgi.value( name )
 	 elsif f["default"].nil? and @saved_data and @saved_data[idx]
 	    f["default"] = @saved_data[idx].gsub(/\\n/, "\n")
          end
